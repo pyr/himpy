@@ -2,6 +2,7 @@ import Himpy.Config (configure)
 import Himpy.Logger (log_start, log_info)
 import Himpy.Recipes
 import Himpy.Types
+import Himpy.Serializers.Riemann
 import System.IO
 import Data.List (concatMap)
 import Control.Concurrent (forkIO, threadDelay)
