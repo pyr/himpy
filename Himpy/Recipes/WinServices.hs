@@ -6,7 +6,7 @@ import Himpy.Logger
 import Control.Concurrent.STM.TChan (TChan)
 import qualified Data.Map as M
 
-srv_rcp :: [String] -> TChan (Metric) -> TChan (String) -> HimpyHost -> IO ()
+srv_rcp :: [String] -> TChan ([Metric]) -> TChan (String) -> HimpyHost -> IO ()
 srv_rcp srvs chan logchan (Host host comm _) = do
 
   names <- snmp_walk_str host comm lanMgrServiceDescr

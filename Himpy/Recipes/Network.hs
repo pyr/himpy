@@ -3,9 +3,10 @@ import Himpy.Recipes.Utils
 import Himpy.Mib
 import Himpy.Types
 import Himpy.Logger
+import Himpy.Output.Riemann
 import Control.Concurrent.STM.TChan (TChan)
 
-net_rcp :: TChan (Metric) -> TChan (String) -> HimpyHost -> IO ()
+net_rcp :: TChan ([Metric]) -> TChan (String) -> HimpyHost -> IO ()
 net_rcp chan logchan (Host host comm _) = do
   names <- snmp_walk_str host comm ifDescr
   opstatus <- snmp_walk_num host comm ifOperStatus
@@ -20,3 +21,4 @@ net_rcp chan logchan (Host host comm _) = do
                       snmp_metrics host "conn" $ zip names conn,
                       snmp_metrics host "adminstatus" $ zip names adminstatus]
   log_info logchan $ "got snmp result: " ++ show (mtrs)
+  riemann_send chan mtrs

@@ -6,7 +6,7 @@ import Himpy.Logger
 import Control.Concurrent.STM.TChan (TChan)
 import qualified Data.Map as M
 
-jun_rcp :: TChan (Metric) -> TChan (String) -> HimpyHost -> IO ()
+jun_rcp :: TChan ([Metric]) -> TChan (String) -> HimpyHost -> IO ()
 jun_rcp chan logchan (Host host comm _) = do
 
   cpu_pct <- snmp_get_num host comm pfeCpuPercent

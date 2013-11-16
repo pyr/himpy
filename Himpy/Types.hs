@@ -12,4 +12,4 @@ data HimpyRecipe = WinSrvRecipe [String] |
                    NetworkRecipe deriving (Show, Read)
 
 class RecipeMod mod where
-  recipe :: mod -> TChan Metric -> TChan String -> HimpyHost -> IO ()
+  recipe :: mod -> TChan [Metric] -> TChan String -> HimpyHost -> IO ()

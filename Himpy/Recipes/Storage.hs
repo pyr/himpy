@@ -11,7 +11,7 @@ storage_pct (used,size) = (used / size) * 100
 storage_realsize :: (Double, Double) -> Double
 storage_realsize (size,allocunits) = size * allocunits
 
-storage_rcp :: TChan (Metric) -> TChan (String) -> HimpyHost -> IO ()
+storage_rcp :: TChan ([Metric]) -> TChan (String) -> HimpyHost -> IO ()
 storage_rcp chan logchan (Host host comm _) = do
 
   names <- snmp_walk_str host comm hrStorageDescr
