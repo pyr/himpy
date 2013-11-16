@@ -8,7 +8,7 @@ import Control.Concurrent.STM.TChan (TChan)
 
 net_rcp :: TChan ([Metric]) -> TChan (String) -> HimpyHost -> IO ()
 net_rcp chan logchan (Host host comm _) = do
-  names <- snmp_walk_str host comm ifDescr
+  names <- snmp_walk_str host comm ifName
   opstatus <- snmp_walk_num host comm ifOperStatus
   rx <- snmp_walk_num host comm ifInOctets
   tx <- snmp_walk_num host comm ifOutOctets
