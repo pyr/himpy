@@ -4,6 +4,9 @@ import qualified Network.Protocol.NetSNMP as S
 ifDescr :: S.RawOID
 ifDescr = [1, 3, 6, 1, 2, 1, 2, 2, 1, 2]
 
+ifName :: S.RawOID
+ifName = [1, 3, 6, 1, 2, 1, 31, 1, 1, 1, 1 ]
+
 ifInOctets :: S.RawOID
 ifInOctets = [1, 3, 6, 1, 2, 1, 2, 2, 1, 10]
 

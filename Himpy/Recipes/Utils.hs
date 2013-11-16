@@ -38,6 +38,7 @@ snmp_nums (Right results) =
 
 snmp_str :: Snmp.ASNValue -> String
 snmp_str (Snmp.OctetString v _) = filter non_nul $ B.unpack v
+snmp_str v = "unknown: " ++ (Snmp.showASNValue v)
 
 snmp_strs :: Either String [Snmp.SnmpResult] -> [String]
 snmp_strs (Right results) =
