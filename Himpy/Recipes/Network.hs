@@ -20,5 +20,4 @@ net_rcp chan logchan (Host host comm _) = do
                       snmp_metrics host "tx" $ zip names tx,
                       snmp_metrics host "conn" $ zip names conn,
                       snmp_metrics host "adminstatus" $ zip names adminstatus]
-  log_info logchan $ "got snmp result: " ++ show (mtrs)
   riemann_send chan mtrs

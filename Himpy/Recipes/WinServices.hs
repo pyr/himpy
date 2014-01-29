@@ -3,6 +3,7 @@ import Himpy.Recipes.Utils
 import Himpy.Mib
 import Himpy.Types
 import Himpy.Logger
+import Himpy.Output.Riemann
 import Control.Concurrent.STM.TChan (TChan)
 import qualified Data.Map as M
 
@@ -16,6 +17,4 @@ srv_rcp srvs chan logchan (Host host comm _) = do
   let defaults = M.fromList $ zip srvs $ repeat 0.0
 
   let flat = M.assocs $ M.union seen defaults
-  let mtrs = snmp_metrics host "service" flat
-
-  log_info logchan $ "got snmp result: " ++ show (mtrs)
+  riemann_send chan $ snmp_metrics host "service" flat

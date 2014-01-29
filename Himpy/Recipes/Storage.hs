@@ -3,7 +3,12 @@ import Himpy.Recipes.Utils
 import Himpy.Mib
 import Himpy.Types
 import Himpy.Logger
+import Himpy.Output.Riemann
+import Data.List
 import Control.Concurrent.STM.TChan (TChan)
+
+sanitize :: String -> String
+sanitize input = h where (h,_) = break (== ':') input
 
 storage_pct :: (Double, Double) -> Double
 storage_pct (used,size) = (used / size) * 100
@@ -20,9 +25,7 @@ storage_rcp chan logchan (Host host comm _) = do
   allocs <- snmp_walk_num host comm hrStorageAllocationUnits
 
   let pcts = map storage_pct $ zip used sizes
-  let real_sizes = map storage_realsize $ zip sizes allocs
-  let real_used = map storage_realsize $ zip used allocs
-  let mtrs = concat [snmp_metrics host "percent" $ zip names pcts,
-                     snmp_metrics host "used" $ zip names real_sizes,
-                     snmp_metrics host "size" $ zip names real_used]
-  log_info logchan $ "got snmp result: " ++ show (mtrs)
+--  let real_sizes = map storage_realsize $ zip sizes allocs
+--  let real_used = map storage_realsize $ zip used allocs
+  let mtrs = snmp_metrics host "percent" $ zip (map sanitize names) pcts
+  riemann_send chan mtrs
