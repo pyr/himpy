@@ -37,6 +37,10 @@ get_host conf = case HM.lookup "host" conf of
    Nothing -> "127.0.0.1"
    Just (String x) -> unpack x
 
+get_log :: Object -> String
+get_log conf = case HM.lookup "logfile" conf of
+   Nothing -> "/var/log/himpy.log"
+   Just (String x) -> unpack x
 
 get_port :: Object -> Integer
 get_port conf = case HM.lookup "port" conf of
@@ -70,12 +74,12 @@ get_thresholds conf = case HM.lookup "thresholds" conf of
 
 from_json :: Object -> HimpyConfig
 from_json conf =
-   Hosts (get_host conf) (get_port conf) (get_hosts conf) (get_thresholds conf)
+   (Hosts (get_host conf) (get_port conf) (get_log conf)
+    (get_hosts conf) (get_thresholds conf))
 
 
 configure path = do
    content <- BL.readFile path
    let Just json_config = decode content :: Maybe Object
    let conf = from_json json_config
-   putStrLn $ show conf
    return conf

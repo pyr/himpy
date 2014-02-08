@@ -1,10 +1,11 @@
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE OverloadedStrings #-}
 module System.Himpy.Output.Riemann (riemann_start, riemann_send) where
 import System.Himpy.Types
 import System.Himpy.Utils
 import System.Himpy.Logger
 import System.Himpy.Serializers.Riemann
-import Network (connectTo, PortID(PortNumber))
+import Network (connectTo, PortID(PortNumber), PortNumber)
 import Network.Socket (withSocketsDo,
                        Socket,
                        SockAddr(SockAddrInet),
@@ -66,14 +67,16 @@ riemann_write_out fd hmsg = do
   B.hGet fd (fromIntegral sz)
   return ()
 
+riemann_safe_write :: TChan String -> String -> Integer -> B.ByteString -> IO ()
 riemann_safe_write logchan host port hmsg = do
   let handler = (\(e :: SomeException) -> log_info logchan $ "send error: " ++ (show e))
-  fd <- connectTo host (PortNumber port)
+  let pn = (fromIntegral port :: PortNumber)
+  fd <- connectTo host (PortNumber pn)
   riemann_write_out fd hmsg `catch` handler `finally` hClose fd
   return ()
 
-riemann_write :: TChan String -> TChan [Metric] -> [Threshold] -> String -> IO ()
-riemann_write logchan chan thresholds host = do
+riemann_write :: TChan String -> TChan [Metric] -> [Threshold] -> String -> Integer -> IO ()
+riemann_write logchan chan thresholds host port  = do
   raw_metrics <- atomically $ readTChan chan
   let metrics = map (apply_thresholds thresholds) raw_metrics
   msg <- metrics_to_msg metrics
@@ -84,13 +87,13 @@ riemann_write logchan chan thresholds host = do
 
   let handler = (\(e :: SomeException) -> log_info logchan $ "write error: " ++ (show e))
 
-  riemann_safe_write logchan host 5555 hmsg `catch` handler
+  riemann_safe_write logchan host port hmsg `catch` handler
   return ()
 
-riemann_start :: TChan String -> String -> [Threshold] -> IO (TChan [Metric])
-riemann_start logchan host thresholds = do
+riemann_start :: TChan String -> String -> Integer -> [Threshold] -> IO (TChan [Metric])
+riemann_start logchan host port thresholds = do
   chan <- newTChanIO
-  void $ forkIO $ forever $ riemann_write logchan chan thresholds host
+  void $ forkIO $ forever $ riemann_write logchan chan thresholds host port
   return (chan)
 
 riemann_send :: TChan [Metric] -> [Metric] -> IO ()

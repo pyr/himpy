@@ -11,11 +11,10 @@ import Control.Concurrent.STM.TChan (writeTChan, readTChan, newTChanIO, TChan)
 log_line :: TChan String -> String -> IO ()
 log_line chan path = do
   line <- atomically $ readTChan chan
-  putStrLn line
---  fd <- openFile path AppendMode
---  hPutStrLn fd line
---  hFlush fd
---  hClose fd
+  fd <- openFile path AppendMode
+  hPutStrLn fd line
+  hFlush fd
+  hClose fd
 
 log_start :: String -> IO (TChan String)
 log_start path = do

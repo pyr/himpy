@@ -5,6 +5,7 @@ import System.Himpy.Types
 import System.Himpy.Serializers.Riemann
 import System.Himpy.Output.Riemann
 import System.IO
+import System.Environment
 import Data.List (concatMap)
 import Control.Concurrent (forkIO, threadDelay)
 import Control.Monad (void, forever)
@@ -26,18 +27,22 @@ start_collector chan logchan host =
   void $ forkIO $ forever $ collect_profiles chan logchan host
 
 start_collectors :: TChan ([Metric]) -> TChan (String) -> HimpyConfig -> IO ()
-start_collectors chan logchan (Hosts (host:hosts) _) = do
+start_collectors chan logchan (Hosts x y z (host:hosts) _) = do
   start_collector chan logchan host
-  start_collectors chan logchan (Hosts hosts [])
-start_collectors chan logchan (Hosts [] _) = do return ()
+  start_collectors chan logchan (Hosts x y z hosts [])
+start_collectors chan logchan (Hosts _ _ _ [] _) = do return ()
+
+get_conf_path [] = "/etc/himpy.conf"
+get_conf_path (path:_) = path
 
 main :: IO ()
 main = do
   Snmp.initialize
-  config <- configure "/etc/himpy.conf"
-  let Hosts _ thresholds = config
-  logchan <- log_start "/var/log/himpy.log"
-  chan <- riemann_start logchan "127.0.0.1" thresholds
+  args <- getArgs
+  config <- configure $ get_conf_path args
+  let (Hosts host port logfile _ thresholds) = config
+  logchan <- log_start logfile
+  chan <- riemann_start logchan host port thresholds
   log_info logchan "starting himpy"
   start_collectors chan logchan config
   void $ forever $ threadDelay 10000000
