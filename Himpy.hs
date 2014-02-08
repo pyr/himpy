@@ -26,17 +26,18 @@ start_collector chan logchan host =
   void $ forkIO $ forever $ collect_profiles chan logchan host
 
 start_collectors :: TChan ([Metric]) -> TChan (String) -> HimpyConfig -> IO ()
-start_collectors chan logchan (Hosts (host:hosts)) = do
+start_collectors chan logchan (Hosts (host:hosts) _) = do
   start_collector chan logchan host
-  start_collectors chan logchan (Hosts hosts)
-start_collectors chan logchan (Hosts []) = do return ()
+  start_collectors chan logchan (Hosts hosts [])
+start_collectors chan logchan (Hosts [] _) = do return ()
 
 main :: IO ()
 main = do
   Snmp.initialize
   config <- configure "/tmp/himpy.conf"
+  let Hosts _ thresholds = config
   logchan <- log_start "/tmp/himpy.log"
-  chan <- riemann_start logchan "127.0.0.1"
+  chan <- riemann_start logchan "127.0.0.1" thresholds
   log_info logchan "starting himpy"
   start_collectors chan logchan config
   void $ forever $ threadDelay 10000000

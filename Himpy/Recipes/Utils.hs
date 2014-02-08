@@ -10,7 +10,7 @@ non_nul _ = True
 
 snmp_metric :: String -> String -> (String, Double) -> Metric
 snmp_metric host suffix (ifname,metric) =
-  Metric host (ifname ++ " " ++ suffix) metric
+  Metric host (ifname ++ " " ++ suffix) "ok" metric
 
 snmp_metrics :: String -> String -> [(String, Double)] -> [Metric]
 snmp_metrics host suffix metrics =

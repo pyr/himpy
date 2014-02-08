@@ -25,7 +25,5 @@ storage_rcp chan logchan (Host host comm _) = do
   allocs <- snmp_walk_num host comm hrStorageAllocationUnits
 
   let pcts = map storage_pct $ zip used sizes
---  let real_sizes = map storage_realsize $ zip sizes allocs
---  let real_used = map storage_realsize $ zip used allocs
   let mtrs = snmp_metrics host "percent" $ zip (map sanitize names) pcts
   riemann_send chan mtrs

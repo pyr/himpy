@@ -74,11 +74,11 @@ instance Decode ProtoState
 pack_text = Data.Text.pack
 
 metric_to_event :: Metric -> IO (B.ByteString)
-metric_to_event (Metric host service metric) = do
+metric_to_event (Metric host service state metric) = do
   tstamp <- timestamp
   let event = ProtoEvent  {
         time = putField $ Just (fromIntegral tstamp :: Int64),
-        state = putField mempty,
+        state = putField $ Just $ pack_text state,
         service = putField $ Just $ pack_text service,
         host = putField $ Just $ pack_text host,
         description = putField Nothing,
@@ -94,10 +94,10 @@ metric_to_event (Metric host service metric) = do
   return (encoded)
 
 metric_to_protoevent :: Integer -> Metric -> ProtoEvent
-metric_to_protoevent tstamp (Metric host service metric) =
+metric_to_protoevent tstamp (Metric host service state metric) =
   ProtoEvent {
           time = putField $ Just (fromIntegral tstamp :: Int64),
-          state = putField mempty,
+          state = putField $ Just $ pack_text state,
           service = putField $ Just $ pack_text service,
           host = putField $ Just $ pack_text host,
           description = putField Nothing,
