@@ -34,9 +34,9 @@ start_collectors chan logchan (Hosts [] _) = do return ()
 main :: IO ()
 main = do
   Snmp.initialize
-  config <- configure "/tmp/himpy.conf"
+  config <- configure "/etc/himpy.conf"
   let Hosts _ thresholds = config
-  logchan <- log_start "/tmp/himpy.log"
+  logchan <- log_start "/var/log/himpy.log"
   chan <- riemann_start logchan "127.0.0.1" thresholds
   log_info logchan "starting himpy"
   start_collectors chan logchan config

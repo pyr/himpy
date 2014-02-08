@@ -17,7 +17,7 @@ build-type:          Simple
 cabal-version:       >=1.10
 
 executable himpy
-  main-is:           Himpy.hs  
+  main-is:           himpy.hs
 --  ghc-options:       -XDeriveGeneric
   -- other-modules:       
   -- other-extensions:    
