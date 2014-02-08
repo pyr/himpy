@@ -1,4 +1,4 @@
-module Himpy.Types where
+module System.Himpy.Types where
 import Control.Concurrent.STM.TChan (TChan)
 
 data Threshold = Threshold {

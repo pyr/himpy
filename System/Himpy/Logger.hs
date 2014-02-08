@@ -1,4 +1,4 @@
-module Himpy.Logger (log_start, log_info) where
+module System.Himpy.Logger (log_start, log_info) where
 import System.IO (openFile, hPutStrLn, hFlush, hClose,
                   IOMode (AppendMode), Handle)
 import Control.Concurrent (forkIO)

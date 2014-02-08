@@ -1,13 +1,14 @@
-module Himpy.Recipes.Juniper where
-import Himpy.Recipes.Utils
-import Himpy.Mib
-import Himpy.Types
-import Himpy.Logger
+module System.Himpy.Recipes.Cisco where
+import System.Himpy.Recipes.Utils
+import System.Himpy.Mib
+import System.Himpy.Types
+import System.Himpy.Logger
 import Control.Concurrent.STM.TChan (TChan)
 import qualified Data.Map as M
 
-jun_rcp :: TChan ([Metric]) -> TChan (String) -> HimpyHost -> IO ()
-jun_rcp chan logchan (Host host comm _) = do
+cisco_rcp :: TChan ([Metric]) -> TChan (String) -> HimpyHost -> IO ()
+cisco_rcp chan logchan (Host host comm _) = do
+
 
   cpu_pct <- snmp_get_num host comm pfeCpuPercent
   sess_cnt <- snmp_get_num host comm pfeSessions
@@ -22,4 +23,5 @@ jun_rcp chan logchan (Host host comm _) = do
                 ("juniper.psu1", psu1),
                 ("juniper.psu2", psu2)]
   let mtrs = snmp_metrics host "" tuples
+
   log_info logchan $ "got snmp result: " ++ show (mtrs)

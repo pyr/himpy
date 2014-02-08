@@ -1,9 +1,9 @@
-import Himpy.Config (configure)
-import Himpy.Logger (log_start, log_info)
-import Himpy.Recipes
-import Himpy.Types
-import Himpy.Serializers.Riemann
-import Himpy.Output.Riemann
+import System.Himpy.Config (configure)
+import System.Himpy.Logger (log_start, log_info)
+import System.Himpy.Recipes
+import System.Himpy.Types
+import System.Himpy.Serializers.Riemann
+import System.Himpy.Output.Riemann
 import System.IO
 import Data.List (concatMap)
 import Control.Concurrent (forkIO, threadDelay)

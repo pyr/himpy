@@ -1,5 +1,5 @@
-module Himpy.Recipes.Utils where
-import Himpy.Types
+module System.Himpy.Recipes.Utils where
+import System.Himpy.Types
 import Data.List
 import qualified Data.ByteString.Char8 as B
 import qualified Network.Protocol.NetSNMP as Snmp

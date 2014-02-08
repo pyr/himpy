@@ -1,9 +1,9 @@
-module Himpy.Recipes.Network where
-import Himpy.Recipes.Utils
-import Himpy.Mib
-import Himpy.Types
-import Himpy.Logger
-import Himpy.Output.Riemann
+module System.Himpy.Recipes.Network where
+import System.Himpy.Recipes.Utils
+import System.Himpy.Mib
+import System.Himpy.Types
+import System.Himpy.Logger
+import System.Himpy.Output.Riemann
 import Control.Concurrent.STM.TChan (TChan)
 
 net_rcp :: TChan ([Metric]) -> TChan (String) -> HimpyHost -> IO ()

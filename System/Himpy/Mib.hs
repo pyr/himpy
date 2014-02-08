@@ -1,4 +1,4 @@
-module Himpy.Mib where
+module System.Himpy.Mib where
 import Network.Protocol.NetSNMP (RawOID)
 
 ifDescr = [1, 3, 6, 1, 2, 1, 2, 2, 1, 2] :: RawOID

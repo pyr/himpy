@@ -1,9 +1,9 @@
 {-# LANGUAGE ScopedTypeVariables #-}
-module Himpy.Output.Riemann (riemann_start, riemann_send) where
-import Himpy.Types
-import Himpy.Utils
-import Himpy.Logger
-import Himpy.Serializers.Riemann
+module System.Himpy.Output.Riemann (riemann_start, riemann_send) where
+import System.Himpy.Types
+import System.Himpy.Utils
+import System.Himpy.Logger
+import System.Himpy.Serializers.Riemann
 import Network (connectTo, PortID(PortNumber))
 import Network.Socket (withSocketsDo,
                        Socket,

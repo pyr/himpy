@@ -1,9 +1,9 @@
-module Himpy.Recipes.Load where
-import Himpy.Recipes.Utils
-import Himpy.Mib
-import Himpy.Types
-import Himpy.Logger
-import Himpy.Output.Riemann
+module System.Himpy.Recipes.Load where
+import System.Himpy.Recipes.Utils
+import System.Himpy.Mib
+import System.Himpy.Types
+import System.Himpy.Logger
+import System.Himpy.Output.Riemann
 import Control.Concurrent.STM.TChan (TChan)
 
 load_tuple :: (Int, Double) -> (String, Double)

@@ -1,4 +1,4 @@
-module Himpy.Utils (timestamp, octets) where
+module System.Himpy.Utils (timestamp, octets) where
 import Data.Bits
 import Data.Word
 import qualified System.Time as T

@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
-module Himpy.Serializers.Riemann where
-import Himpy.Types
-import Himpy.Utils
+module System.Himpy.Serializers.Riemann where
+import System.Himpy.Types
+import System.Himpy.Utils
 import Data.Int
 import Data.Text
 import Data.ProtocolBuffers
