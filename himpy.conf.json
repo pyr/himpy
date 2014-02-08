@@ -1,0 +1,18 @@
+{
+    "host": "127.0.0.1",
+    "port": "5555",
+    "hosts": [
+        {"host": "127.0.0.1",
+         "community": "public",
+         "recipes": {"network": [],
+                     "storage": [],
+                     "load": [],
+                     "winservices": ["foo"]}
+        }
+    ],
+    "thresholds": [
+        {"host": "(.*)", "service": "^/ percent", "warning": "30.00", "critical": "50.00"},
+        {"host": "(.*)", "service": "load-all", "warning": "30.00", "critical": "50.00"}
+
+    ]
+}
