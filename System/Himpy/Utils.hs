@@ -7,7 +7,7 @@ import qualified System.Time.Utils as TU
 timestamp :: IO (Integer)
 timestamp = do
   t <- T.getClockTime
-  let ct = T.tCalendarTime t
+  let ct = T.toCalendarTime t
   epoch <- TU.timelocal ct
   return epoch
 
