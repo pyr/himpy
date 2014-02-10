@@ -8,9 +8,7 @@
             "community": "public",
             "recipes": {
                 "network": [],
-                "storage": [],
-                "load": [],
-                "winservices": ["logstash"]
+                "storage": []
             }
         }
     ],

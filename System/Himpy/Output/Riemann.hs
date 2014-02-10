@@ -75,11 +75,11 @@ riemann_safe_write logchan host port hmsg = do
   riemann_write_out fd hmsg `catch` handler `finally` hClose fd
   return ()
 
-riemann_write :: TChan String -> TChan [Metric] -> [Threshold] -> String -> Integer -> IO ()
-riemann_write logchan chan thresholds host port  = do
+riemann_write :: TChan String -> TChan [Metric] -> Double -> [Threshold] -> String -> Integer -> IO ()
+riemann_write logchan chan ttl thresholds host port  = do
   raw_metrics <- atomically $ readTChan chan
   let metrics = map (apply_thresholds thresholds) raw_metrics
-  msg <- metrics_to_msg metrics
+  msg <- metrics_to_msg metrics ttl
 
   let hdr = B.pack $ octets $ (fromIntegral (B.length msg) :: Word32)
   let hmsg = B.concat [hdr, msg]
@@ -90,10 +90,10 @@ riemann_write logchan chan thresholds host port  = do
   riemann_safe_write logchan host port hmsg `catch` handler
   return ()
 
-riemann_start :: TChan String -> String -> Integer -> [Threshold] -> IO (TChan [Metric])
-riemann_start logchan host port thresholds = do
+riemann_start :: TChan String -> String -> Integer -> Double -> [Threshold] -> IO (TChan [Metric])
+riemann_start logchan host port ttl thresholds = do
   chan <- newTChanIO
-  void $ forkIO $ forever $ riemann_write logchan chan thresholds host port
+  void $ forkIO $ forever $ riemann_write logchan chan ttl thresholds host port
   return (chan)
 
 riemann_send :: TChan [Metric] -> [Metric] -> IO ()

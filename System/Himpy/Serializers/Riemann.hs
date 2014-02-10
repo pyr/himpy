@@ -93,8 +93,8 @@ metric_to_event (Metric host service state metric) = do
   let encoded = runPut as_put
   return (encoded)
 
-metric_to_protoevent :: Integer -> Metric -> ProtoEvent
-metric_to_protoevent tstamp (Metric host service state metric) =
+metric_to_protoevent :: Integer -> Metric -> Double -> ProtoEvent
+metric_to_protoevent tstamp (Metric host service state metric) ttl =
   ProtoEvent {
           time = putField $ Just (fromIntegral tstamp :: Int64),
           state = putField $ Just $ pack_text state,
@@ -102,17 +102,17 @@ metric_to_protoevent tstamp (Metric host service state metric) =
           host = putField $ Just $ pack_text host,
           description = putField Nothing,
           tags = putField [pack_text "snmp", pack_text "himpy"],
-          ttl = putField $ Just 120,
+          ttl = putField $ Just ttl,
           attributes = putField mempty,
           metric_sint64 = putField Nothing,
           metric_d = putField $ Just metric,
           metric_f = putField Nothing
           }
 
-metrics_to_msg :: [Metric] -> IO (B.ByteString)
-metrics_to_msg metrics = do
+metrics_to_msg :: [Metric] -> Double -> IO (B.ByteString)
+metrics_to_msg metrics ttl = do
   tstamp <- timestamp
-  let events = [metric_to_protoevent tstamp m | m <- metrics]
+  let events = [metric_to_protoevent tstamp m ttl | m <- metrics]
   let msg = ProtoMsg {
         m_ok = putField $ Just True,
         m_error = putField mempty,

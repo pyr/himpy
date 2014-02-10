@@ -72,9 +72,21 @@ get_thresholds conf = case HM.lookup "thresholds" conf of
    Nothing -> []
    Just (Array thresholds) -> V.toList $ V.map get_threshold thresholds
 
+get_interval :: Object -> Integer
+get_interval conf = case HM.lookup "interval" conf of
+   Nothing -> 60
+   Just (String x) -> (read (unpack x) :: Integer)
+
+
+get_ttl :: Object -> Double
+get_ttl conf = case HM.lookup "ttl" conf of
+   Nothing -> 125.0
+   Just (String x) -> (read (unpack x) :: Double)
+
 from_json :: Object -> HimpyConfig
 from_json conf =
-   (Hosts (get_host conf) (get_port conf) (get_log conf)
+   (Hosts (get_interval conf) (get_ttl conf)
+    (get_host conf) (get_port conf) (get_log conf)
     (get_hosts conf) (get_thresholds conf))
 
 
