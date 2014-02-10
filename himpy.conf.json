@@ -1,6 +1,6 @@
 {
-    "ttl": "170.00",
-    "interval": "5",
+    "ttl": "125.00",
+    "interval": "60",
     "logfile": "/tmp/himpy.log",
     "host": "127.0.0.1",
     "port": "5555",
