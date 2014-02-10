@@ -12,7 +12,7 @@ data Threshold = Threshold {
 
 data Metric = Metric String String String Double deriving (Show, Read)
 
-data HimpyConfig = Hosts Integer Double String Integer String [HimpyHost] [Threshold] deriving (Show, Read)
+data HimpyConfig = Hosts Integer Float String Integer String [HimpyHost] [Threshold] deriving (Show, Read)
 
 data HimpyHost = Host String String [HimpyRecipe] deriving (Show, Read)
 

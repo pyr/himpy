@@ -75,7 +75,7 @@ riemann_safe_write logchan host port hmsg = do
   riemann_write_out fd hmsg `catch` handler `finally` hClose fd
   return ()
 
-riemann_write :: TChan String -> TChan [Metric] -> Double -> [Threshold] -> String -> Integer -> IO ()
+riemann_write :: TChan String -> TChan [Metric] -> Float -> [Threshold] -> String -> Integer -> IO ()
 riemann_write logchan chan ttl thresholds host port  = do
   raw_metrics <- atomically $ readTChan chan
   let metrics = map (apply_thresholds thresholds) raw_metrics
@@ -90,7 +90,7 @@ riemann_write logchan chan ttl thresholds host port  = do
   riemann_safe_write logchan host port hmsg `catch` handler
   return ()
 
-riemann_start :: TChan String -> String -> Integer -> Double -> [Threshold] -> IO (TChan [Metric])
+riemann_start :: TChan String -> String -> Integer -> Float -> [Threshold] -> IO (TChan [Metric])
 riemann_start logchan host port ttl thresholds = do
   chan <- newTChanIO
   void $ forkIO $ forever $ riemann_write logchan chan ttl thresholds host port

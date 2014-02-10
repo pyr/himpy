@@ -25,7 +25,7 @@ data ProtoEvent = ProtoEvent {
   host :: Optional D4 (Value Text),
   description :: Optional D5 (Value Text),
   tags :: Repeated D7 (Value Text),
-  ttl :: Optional D8 (Value Double),
+  ttl :: Optional D8 (Value Float),
 
   attributes :: Repeated D9 (Message ProtoAttr),
 
@@ -73,28 +73,8 @@ instance Decode ProtoState
 
 pack_text = Data.Text.pack
 
-metric_to_event :: Metric -> IO (B.ByteString)
-metric_to_event (Metric host service state metric) = do
-  tstamp <- timestamp
-  let event = ProtoEvent  {
-        time = putField $ Just (fromIntegral tstamp :: Int64),
-        state = putField $ Just $ pack_text state,
-        service = putField $ Just $ pack_text service,
-        host = putField $ Just $ pack_text host,
-        description = putField Nothing,
-        tags = putField [pack_text "snmp"],
-        ttl = putField $ Just 120,
-        attributes = putField mempty,
-        metric_sint64 = putField Nothing,
-        metric_d = putField $ Just metric,
-        metric_f = putField Nothing
-        }
-  let as_put = encodeMessage event
-  let encoded = runPut as_put
-  return (encoded)
-
-metric_to_protoevent :: Integer -> Metric -> Double -> ProtoEvent
-metric_to_protoevent tstamp (Metric host service state metric) ttl =
+metric_to_protoevent :: Integer -> Metric -> Float -> ProtoEvent
+metric_to_protoevent tstamp (Metric host service state metric) dttl =
   ProtoEvent {
           time = putField $ Just (fromIntegral tstamp :: Int64),
           state = putField $ Just $ pack_text state,
@@ -102,17 +82,18 @@ metric_to_protoevent tstamp (Metric host service state metric) ttl =
           host = putField $ Just $ pack_text host,
           description = putField Nothing,
           tags = putField [pack_text "snmp", pack_text "himpy"],
-          ttl = putField $ Just ttl,
+          ttl = putField $ (Just dttl),
           attributes = putField mempty,
           metric_sint64 = putField Nothing,
           metric_d = putField $ Just metric,
           metric_f = putField Nothing
           }
 
-metrics_to_msg :: [Metric] -> Double -> IO (B.ByteString)
-metrics_to_msg metrics ttl = do
+metrics_to_msg :: [Metric] -> Float -> IO (B.ByteString)
+metrics_to_msg metrics dttl = do
+  Prelude.putStrLn $ "got mtm ttl: " ++ (show dttl)
   tstamp <- timestamp
-  let events = [metric_to_protoevent tstamp m ttl | m <- metrics]
+  let events = [metric_to_protoevent tstamp m dttl | m <- metrics]
   let msg = ProtoMsg {
         m_ok = putField $ Just True,
         m_error = putField mempty,

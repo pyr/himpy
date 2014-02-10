@@ -78,10 +78,10 @@ get_interval conf = case HM.lookup "interval" conf of
    Just (String x) -> (read (unpack x) :: Integer)
 
 
-get_ttl :: Object -> Double
+get_ttl :: Object -> Float
 get_ttl conf = case HM.lookup "ttl" conf of
    Nothing -> 125.0
-   Just (String x) -> (read (unpack x) :: Double)
+   Just (String x) -> (read (unpack x) :: Float)
 
 from_json :: Object -> HimpyConfig
 from_json conf =
