@@ -4,7 +4,12 @@
 name:                himpy
 version:             0.5.0
 synopsis:            multithreaded snmp poller for riemann
--- description:         
+description:         
+     Himpy provides a multi-threaded snmp poller which reports
+     to riemann.
+     .
+     Polled MIBs are grouped in recipes and produce relative results
+     whereever possible (for instance, the storage recipe reports percents).
 homepage:            https://github.com/pyr/himpy
 license:             MIT
 license-file:        LICENSE
@@ -13,7 +18,11 @@ maintainer:          pyr@spootnik.org
 -- copyright:           
 category:            System
 build-type:          Simple
--- extra-source-files:  
+extra-source-files:  README.md
+                     System/Himpy/*.hs
+                     System/Himpy/Recipes/*.hs
+                     System/Himpy/Serializers/*.hs
+                     System/Himpy/Output/*.hs
 cabal-version:       >=1.10
 
 executable himpy
