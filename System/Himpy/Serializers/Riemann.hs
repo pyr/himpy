@@ -91,7 +91,6 @@ metric_to_protoevent tstamp (Metric host service state metric) dttl =
 
 metrics_to_msg :: [Metric] -> Float -> IO (B.ByteString)
 metrics_to_msg metrics dttl = do
-  Prelude.putStrLn $ "got mtm ttl: " ++ (show dttl)
   tstamp <- timestamp
   let events = [metric_to_protoevent tstamp m dttl | m <- metrics]
   let msg = ProtoMsg {
