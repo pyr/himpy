@@ -7,9 +7,9 @@ import System.Himpy.Recipes.Juniper
 import System.Himpy.Types
 
 instance RecipeMod HimpyRecipe where
-  recipe mod chan logchan host =
+  recipe mod chan logchan host index =
     case mod of
-         NetworkRecipe       -> net_rcp chan logchan host
+         NetworkRecipe       -> net_rcp chan logchan host index
          StorageRecipe       -> storage_rcp chan logchan host
          (WinSrvRecipe srvs) -> srv_rcp srvs chan logchan host
          LoadRecipe          -> load_rcp chan logchan host

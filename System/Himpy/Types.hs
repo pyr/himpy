@@ -1,4 +1,6 @@
 module System.Himpy.Types where
+import Control.Concurrent.MVar (MVar)
+import Data.Map (Map)
 import Control.Concurrent.STM.TChan (TChan)
 
 data Threshold = Threshold {
@@ -20,5 +22,8 @@ data HimpyRecipe = WinSrvRecipe [String] |
                    JuniperRecipe |
                    NetworkRecipe deriving (Show, Read)
 
+type HInternalIndex = Map (String,String) Double
+type HIndex = MVar HInternalIndex
+
 class RecipeMod mod where
-  recipe :: mod -> TChan [Metric] -> TChan String -> HimpyHost -> IO ()
+  recipe :: mod -> TChan [Metric] -> TChan String -> HimpyHost -> HIndex -> IO ()
