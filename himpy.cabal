@@ -2,8 +2,8 @@
 --  see http://haskell.org/cabal/users-guide/
 
 name:                himpy
-version:             0.1.0.0
-synopsis:            Snmp Poller
+version:             0.5.0
+synopsis:            multithreaded snmp poller for riemann
 -- description:         
 homepage:            https://github.com/pyr/himpy
 license:             MIT
@@ -11,14 +11,14 @@ license-file:        LICENSE
 author:              Pierre-Yves Ritschard
 maintainer:          pyr@spootnik.org
 -- copyright:           
--- category:            
+category:            System
 build-type:          Simple
 -- extra-source-files:  
 cabal-version:       >=1.10
 
 executable himpy
   main-is:           himpy.hs
---  ghc-options:       -XDeriveGeneric
+  ghc-options:       -threaded
   -- other-modules:       
   -- other-extensions:    
   build-depends:       base >=4.6 && <4.7, NetSNMP >= 0.3.0.6, bytestring >= 0.10.0.2,
