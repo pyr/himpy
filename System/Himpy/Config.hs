@@ -15,6 +15,7 @@ get_rcp :: (String,[String]) -> HimpyRecipe
 get_rcp ("storage",_) = StorageRecipe
 get_rcp ("network", _) = NetworkRecipe
 get_rcp ("load", _) = LoadRecipe
+get_rcp ("iostat", _) = IostatRecipe
 get_rcp ("juniper", _) = JuniperRecipe
 get_rcp ("winservices", services) = WinSrvRecipe services
 

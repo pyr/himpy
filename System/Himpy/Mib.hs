@@ -34,3 +34,5 @@ ciscoSwitchPSU1 = [1,3,6,1,4,1,9,9,117,1,1,2,1,2,470] :: RawOID
 ciscoSwitchPSU2 = [1,3,6,1,4,1,9,9,117,1,1,2,1,2,471] :: RawOID
 zfsPoolDescr = [1,3,6,1,4,1,25359,1,1,1] :: RawOID
 zfsPoolHealth = [1,3,6,1,4,1,25359,1,1,4] :: RawOID
+ioStatDisks = [1,3,6,1,4,1,25359,4,1,1] :: RawOID
+ioStatErrors = [1,3,6,1,4,1,25359,4,1,2] :: RawOID

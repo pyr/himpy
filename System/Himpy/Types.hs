@@ -20,6 +20,7 @@ data HimpyRecipe = WinSrvRecipe [String] |
                    StorageRecipe |
                    LoadRecipe |
                    JuniperRecipe |
+                   IostatRecipe |
                    NetworkRecipe deriving (Show, Read)
 
 type HInternalIndex = Map (String,String) Double
