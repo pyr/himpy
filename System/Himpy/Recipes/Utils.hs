@@ -1,5 +1,6 @@
 module System.Himpy.Recipes.Utils where
 import System.Himpy.Types
+import Data.Word
 import Data.List
 import qualified Data.ByteString.Char8 as B
 import qualified Network.Protocol.NetSNMP as Snmp
@@ -24,7 +25,8 @@ snmp_last_strs (Right results) =
   [show r | r <- results]
 
 snmp_num :: Snmp.ASNValue -> Double
-snmp_num (Snmp.Integer32 v) = fromIntegral v :: Double
+snmp_num (Snmp.Integer32 v) = fromIntegral vprime :: Double where
+  vprime = fromIntegral v :: Word32
 snmp_num (Snmp.Integer64 v) = fromIntegral v :: Double
 snmp_num (Snmp.Counter32 v) = fromIntegral v :: Double
 snmp_num (Snmp.Counter64 v) = fromIntegral v :: Double
@@ -40,14 +42,19 @@ snmp_str :: Snmp.ASNValue -> String
 snmp_str (Snmp.OctetString v _) = filter non_nul $ B.unpack v
 snmp_str v = "unknown: " ++ (Snmp.showASNValue v)
 
-snmp_strs :: Either String [Snmp.SnmpResult] -> [String]
-snmp_strs (Right results) =
+snmp_strs :: [Snmp.SnmpResult] -> [String]
+snmp_strs results =
   [snmp_str value | (Snmp.SnmpResult oid value) <- results]
 
 snmp_walk_str :: String -> String -> Snmp.RawOID -> IO ([String])
 snmp_walk_str host comm oid = do
   v <- Snmp.snmpWalk Snmp.snmp_version_2c (B.pack host) (B.pack comm) oid
-  return (snmp_strs v)
+  case v of
+    Left error -> do
+      -- XXX: should log here
+      return []
+    Right results ->
+      return (snmp_strs results)
 
 snmp_walk_num :: String -> String -> Snmp.RawOID -> IO ([Double])
 snmp_walk_num host comm oid = do
@@ -58,6 +65,19 @@ snmp_walk_last_str :: String -> String -> Snmp.RawOID -> IO ([String])
 snmp_walk_last_str host comm oid = do
   v <- Snmp.snmpWalk Snmp.snmp_version_2c (B.pack host) (B.pack comm) oid
   return (snmp_last_strs v)
+
+snmp_oid :: Snmp.ASNValue -> Snmp.RawOID
+snmp_oid (Snmp.OID _ _ o) = [fromIntegral subo :: Snmp.OIDpart | subo <- o]
+
+snmp_oids :: [Snmp.SnmpResult] -> [Snmp.RawOID]
+snmp_oids results = [snmp_oid value | (Snmp.SnmpResult oid value) <- results]
+
+snmp_walk_oid :: String -> String -> Snmp.RawOID -> IO ([Snmp.RawOID])
+snmp_walk_oid host comm oid = do
+  v <- Snmp.snmpWalk Snmp.snmp_version_2c (B.pack host) (B.pack comm) oid
+  case v of
+    Left error -> return []
+    Right results -> return (snmp_oids results)
 
 snmp_get_num :: String -> String -> Snmp.RawOID -> IO (Double)
 snmp_get_num host comm oid = do

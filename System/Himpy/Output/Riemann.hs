@@ -51,6 +51,12 @@ apply_threshold (Just (Threshold {tWarning = Just warn, tCritical = crit})) metr
   else if point >= warn then to_state metric "warning"
        else metric
   where (Metric _ _ _ point) = metric
+apply_threshold (Just (Threshold {tWarning = Nothing, tCritical = crit})) metric =
+  if point >= crit then
+    to_state metric "critical"
+  else
+    metric
+  where (Metric _ _ _ point) = metric
 
 
 apply_thresholds :: [Threshold] -> Metric -> Metric
