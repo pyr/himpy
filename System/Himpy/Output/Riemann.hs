@@ -27,6 +27,13 @@ import Text.Regex.Posix
 import qualified Data.ByteString.Lazy as BL
 import qualified Data.ByteString as B
 
+point_matches :: LevelThreshold -> Double -> Bool
+point_matches (LevelThreshold Nothing Nothing) _ = False
+point_matches (LevelThreshold (Just min) Nothing) point = point <= min
+point_matches (LevelThreshold Nothing (Just max)) point = point >= max
+point_matches (LevelThreshold (Just min) (Just max)) point =
+  point <= min || point >= max
+
 -- Simplistic riemann write module
 to_state :: Metric -> String -> Metric
 to_state (Metric host service _ point) state =
@@ -46,18 +53,18 @@ find_threshold thresholds metric =
 apply_threshold :: Maybe Threshold -> Metric -> Metric
 apply_threshold Nothing metric= metric
 apply_threshold (Just (Threshold {tWarning = Just warn, tCritical = crit})) metric =
-  if point >= crit then
+  if point_matches crit point then
     to_state metric "critical"
-  else if point >= warn then to_state metric "warning"
+  else if point_matches warn point then to_state metric "warning"
        else metric
   where (Metric _ _ _ point) = metric
 apply_threshold (Just (Threshold {tWarning = Nothing, tCritical = crit})) metric =
-  if point >= crit then
+
+  if point_matches crit point then
     to_state metric "critical"
   else
     metric
   where (Metric _ _ _ point) = metric
-
 
 apply_thresholds :: [Threshold] -> Metric -> Metric
 apply_thresholds thresholds metric = apply_threshold threshold metric where

@@ -3,11 +3,16 @@ import Control.Concurrent.MVar (MVar)
 import Data.Map (Map)
 import Control.Concurrent.STM.TChan (TChan)
 
+data LevelThreshold = LevelThreshold {
+  tMin :: Maybe Double,
+  tMax :: Maybe Double
+  } deriving (Show, Read)
+
 data Threshold = Threshold {
   tHost     :: String,
   tService  :: String,
-  tWarning  :: Maybe Double,
-  tCritical :: Double
+  tWarning  :: Maybe LevelThreshold,
+  tCritical :: LevelThreshold
   } deriving (Show, Read)
 
 data Metric = Metric String String String Double deriving (Show, Read)
