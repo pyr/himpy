@@ -14,8 +14,8 @@ hasMetric ((_, _), (Just _)) = True
 buildMetric ((host,service), (Just metric)) =
   Metric host service "ok" metric
 
-net_rcp :: TChan ([Metric]) -> TChan (String) -> HimpyHost -> HIndex -> IO ()
-net_rcp chan logchan (Host host comm _) index = do
+net_rcp :: TChan ([Metric]) -> TChan (String) -> Integer -> HimpyHost -> HIndex -> IO ()
+net_rcp chan logchan ival (Host host comm _) index = do
   names <- snmp_walk_str host comm ifName
   opstatus <- snmp_walk_num host comm ifOperStatus
 
@@ -25,8 +25,8 @@ net_rcp chan logchan (Host host comm _) index = do
   let bw_in_keys = map (\x -> (host, x ++ " bandwidth in")) names
   let bw_out_keys = map (\x -> (host, x ++ " bandwidth out")) names
 
-  all_bw_in <- mapM (\(x,y) -> (deriveMetric index 10 x y)) (zip bw_in_keys rx)
-  all_bw_out <- mapM (\(x,y) -> (deriveMetric index 10 x y)) (zip bw_out_keys tx)
+  all_bw_in <- mapM (\(x,y) -> (deriveMetric index ival x y)) (zip bw_in_keys rx)
+  all_bw_out <- mapM (\(x,y) -> (deriveMetric index ival x y)) (zip bw_out_keys tx)
 
   let bw_in = [buildMetric t | t <- (zip bw_in_keys all_bw_in), hasMetric t]
   let bw_out = [buildMetric t | t <- (zip bw_out_keys all_bw_out), hasMetric t]

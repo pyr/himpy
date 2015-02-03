@@ -1,4 +1,4 @@
-{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DeriveGeneric, DataKinds #-}
 module System.Himpy.Serializers.Riemann where
 import System.Himpy.Types
 import System.Himpy.Utils
@@ -9,53 +9,52 @@ import Data.Monoid (mempty)
 import Data.Serialize (runPut)
 import Data.Serialize.Put (Put)
 import Data.ByteString as B
-import Data.TypeLevel (D1, D2, D3, D4, D5, D6, D7, D8,
-                       D9, D10, D11, D12, D13, D14, D15)
 import GHC.Generics (Generic)
+import GHC.TypeLits
 
 data ProtoAttr = ProtoAttr {
-  key :: Optional D1 (Value Text),
-  value :: Optional D2 (Value Text)
+  key :: Optional 1 (Value Text),
+  value :: Optional 2 (Value Text)
   } deriving (Generic, Show)
 
 data ProtoEvent = ProtoEvent {
-  time  :: Optional D1 (Value Int64),
-  state :: Optional D2 (Value Text),
-  service :: Optional D3 (Value Text),
-  host :: Optional D4 (Value Text),
-  description :: Optional D5 (Value Text),
-  tags :: Repeated D7 (Value Text),
-  ttl :: Optional D8 (Value Float),
+  time  :: Optional 1 (Value Int64),
+  state :: Optional 2 (Value Text),
+  service :: Optional 3 (Value Text),
+  host :: Optional 4 (Value Text),
+  description :: Optional 5 (Value Text),
+  tags :: Repeated 6 (Value Text),
+  ttl :: Optional 7 (Value Float),
 
-  attributes :: Repeated D9 (Message ProtoAttr),
+  attributes :: Repeated 8 (Message ProtoAttr),
 
-  metric_sint64 :: Optional D13 (Value Int64),
-  metric_d      :: Optional D14 (Value Double),
-  metric_f      :: Optional D15 (Value Double)
+  metric_sint64 :: Optional 13 (Value Int64),
+  metric_d      :: Optional 14 (Value Double),
+  metric_f      :: Optional 15 (Value Double)
   } deriving (Generic, Show)
 
 data ProtoQuery = ProtoQuery {
-  query :: Optional D1 (Value Text)
+  query :: Optional 1 (Value Text)
   } deriving (Generic, Show)
 
 
 data ProtoState = ProtoState {
-  s_time :: Optional D1 (Value Int64),
-  s_state :: Optional D2 (Value Text),
-  s_service :: Optional D3 (Value Text),
-  s_host :: Optional D4 (Value Text),
-  s_description :: Optional D5 (Value Text),
-  s_once :: Optional D6 (Value Bool),
-  s_tags :: Repeated D7 (Value Text),
-  s_ttl :: Optional D8 (Value Double)
+  s_time :: Optional 1 (Value Int64),
+  s_state :: Optional 2 (Value Text),
+  s_service :: Optional 3 (Value Text),
+  s_host :: Optional 4 (Value Text),
+  s_description :: Optional 5 (Value Text),
+  s_once :: Optional 6 (Value Bool),
+  s_tags :: Repeated 7 (Value Text),
+  s_ttl :: Optional 8 (Value Double)
   } deriving (Generic, Show)
 
 data ProtoMsg = ProtoMsg {
-  m_ok :: Optional D2 (Value Bool),
-  m_error :: Optional D3 (Value Text),
-  m_states :: Repeated D4 (Message ProtoState),
-  m_query :: Optional D5 (Message ProtoQuery),
-  m_events :: Repeated D6  (Message ProtoEvent)
+  m_ok :: Optional 2 (Value Bool),
+  m_error :: Optional 3 (Value Text),
+  m_states :: Repeated 4 (Message ProtoState),
+  m_query :: Optional 5 (Message ProtoQuery),
+  m_events :: Repeated 6  (Message ProtoEvent)
 } deriving (Generic, Show)
 
 

@@ -27,4 +27,4 @@ type HInternalIndex = Map (String,String) Double
 type HIndex = MVar HInternalIndex
 
 class RecipeMod mod where
-  recipe :: mod -> TChan [Metric] -> TChan String -> HimpyHost -> HIndex -> IO ()
+  recipe :: mod -> TChan [Metric] -> TChan String -> Integer -> HimpyHost -> HIndex -> IO ()

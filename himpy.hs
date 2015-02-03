@@ -17,7 +17,7 @@ import qualified Network.Protocol.NetSNMP as Snmp
 
 collect_profiles :: TChan ([Metric]) -> TChan (String) -> Integer -> HimpyHost -> HIndex -> IO ()
 collect_profiles chan logchan ival (Host host comm (prof:profs)) index = do
-  recipe prof chan logchan (Host host comm [prof]) index
+  recipe prof chan logchan ival (Host host comm [prof]) index
   collect_profiles chan logchan ival (Host host comm profs) index
 collect_profiles chan logchan ival (Host host _ []) index = do
   log_info logchan $ "ticking for host: " ++ host
