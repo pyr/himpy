@@ -19,8 +19,8 @@ net_rcp chan logchan ival (Host host comm _) index = do
   names <- snmp_walk_str host comm ifName
   opstatus <- snmp_walk_num host comm ifOperStatus
 
-  rx <- snmp_walk_num host comm ifInOctets
-  tx <- snmp_walk_num host comm ifOutOctets
+  rx <- snmp_walk_num host comm ifHCInOctets
+  tx <- snmp_walk_num host comm ifHCOutOctets
 
   let bw_in_keys = map (\x -> (host, x ++ " bandwidth in")) names
   let bw_out_keys = map (\x -> (host, x ++ " bandwidth out")) names
