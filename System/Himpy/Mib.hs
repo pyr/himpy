@@ -3,8 +3,8 @@ import Network.Protocol.NetSNMP (RawOID)
 
 ifDescr = [1, 3, 6, 1, 2, 1, 2, 2, 1, 2] :: RawOID
 ifName = [1, 3, 6, 1, 2, 1, 31, 1, 1, 1, 1 ] :: RawOID
-ifInOctets = [1, 3, 6, 1, 2, 1, 2, 2, 1, 10] :: RawOID
-ifOutOctets = [1, 3, 6, 1, 2, 1, 2, 2, 1, 16] :: RawOID
+ifHCInOctets = [1, 3, 6, 1, 2, 1, 31, 1, 1, 1, 6] :: RawOID
+ifHCOutOctets = [1, 3, 6, 1, 2, 1, 31, 1, 1, 1, 10] :: RawOID
 ifOperStatus = [1, 3, 6, 1, 2, 1, 2, 2, 1, 8] :: RawOID
 ifConnectorPresent = [1, 3, 6, 1, 2, 1, 2, 2, 1, 17] :: RawOID
 ifAdminStatus = [1, 3, 6, 1, 2, 1, 2, 2, 1, 7] :: RawOID
