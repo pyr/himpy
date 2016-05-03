@@ -1,98 +1,67 @@
 {-# LANGUAGE OverloadedStrings #-}
 module System.Himpy.Config (configure) where
 import System.Himpy.Types
+import Control.Applicative
 import Data.Aeson
 import System.IO (readFile)
 import Data.Text (unpack, Text)
 
+import Data.HashMap.Strict (member)
 import Data.Attoparsec.Number as AN
 import qualified Data.Vector as V
 import qualified Data.HashMap.Strict as HM
 import qualified Data.Map as M
 import qualified Data.ByteString.Lazy as BL
 
-get_rcp :: (String,[String]) -> HimpyRecipe
-get_rcp ("storage",_) = StorageRecipe
-get_rcp ("network", _) = NetworkRecipe
-get_rcp ("load", _) = LoadRecipe
-get_rcp ("iostat", _) = IostatRecipe
-get_rcp ("juniper", _) = JuniperRecipe
-get_rcp ("winservices", services) = WinSrvRecipe services
+instance FromJSON LevelThreshold where
+  parseJSON (Object o) | (member "min" o && member "max" o) = LevelThreshold <$> o .: "min"
+                                                                             <*> o .: "max"
+                       | (member "min" o) = LevelThreshold <$> o .: "min"
+                                                           <*> pure Nothing
+                       | (member "max" o) = LevelThreshold <$> pure Nothing
+                                                           <*> o .: "max"
+  parseJSON (Number d) = pure (LevelThreshold Nothing (Just (fromRational (toRational d))))
 
-to_str (String t) = unpack t
+instance FromJSON Threshold where
+  parseJSON (Object o) | member "warning" o = Threshold <$> o .: "host"
+                                                        <*> o .: "service"
+                                                        <*> o .: "warning"
+                                                        <*> o .: "critical"
+                       | otherwise = Threshold <$> o .: "host"
+                                               <*> o .: "service"
+                                               <*> pure Nothing
+                                               <*> o .: "critical"
 
-clean_rcp :: (Text, Value) -> (String, [String])
-clean_rcp (k, (Array strs)) = (unpack k, V.toList $ V.map to_str strs)
+instance FromJSON HimpyRecipe where
+  parseJSON (String "load") = pure LoadRecipe
+  parseJSON (String "storage") = pure StorageRecipe
+  parseJSON (String "juniper") = pure JuniperRecipe
+  parseJSON (String "iostat") = pure IostatRecipe
+  parseJSON (String "network") = pure NetworkRecipe
+  parseJSON (Object o) | member "winservices" o = WinSrvRecipe <$> o .: "winservices"
+                       | member "network" o = pure NetworkRecipe
+                       | member "iostat" o = pure IostatRecipe
+                       | member "storage" o = pure StorageRecipe
+                       | member "load" o = pure LoadRecipe
+                       | member "juniper" o = pure JuniperRecipe
 
+instance FromJSON HimpyHost where
+  parseJSON (Object o) = Host <$> o .: "host"
+                              <*> o .: "community"
+                              <*> o .: "recipes"
 
-
-get_host_conf :: Value -> HimpyHost
-get_host_conf (Object h) = (Host (unpack host) (unpack comm) rcps) where
-  (String host) = h HM.! "host"
-  (String comm) = h HM.! "community"
-  (Object raw_rcps) = h HM.! "recipes"
-  rcps = map (get_rcp . clean_rcp) $ HM.toList raw_rcps
-
-get_host :: Object -> String
-get_host conf = case HM.lookup "host" conf of
-   Nothing -> "127.0.0.1"
-   Just (String x) -> unpack x
-
-get_log :: Object -> String
-get_log conf = case HM.lookup "logfile" conf of
-   Nothing -> "/var/log/himpy.log"
-   Just (String x) -> unpack x
-
-get_port :: Object -> Integer
-get_port conf = case HM.lookup "port" conf of
-   Nothing -> 5555
-   Just (String x) -> (read (unpack x) :: Integer)
-
-get_hosts conf = case HM.lookup "hosts" conf of
-   Nothing -> []
-   Just (Array hosts) -> V.toList $ V.map get_host_conf hosts
-
-get_warn :: Object -> Maybe Double
-get_warn t = case HM.lookup "warning" t of
-   Nothing -> Nothing
-   Just (String w) -> Just (read (unpack w) :: Double)
-
-get_threshold :: Value -> Threshold
-get_threshold (Object t) =  Threshold {tHost = host, tService = service, tWarning =
-                                          warning, tCritical = critical} where
-  (String t_host) = t HM.! "host"
-  (String t_service) = t HM.! "service"
-  (String t_critical) = t HM.! "critical"
-  host = unpack t_host
-  service = unpack t_service
-  warning = get_warn t
-  critical =  (read (unpack t_critical) :: Double)
-
-
-get_thresholds conf = case HM.lookup "thresholds" conf of
-   Nothing -> []
-   Just (Array thresholds) -> V.toList $ V.map get_threshold thresholds
-
-get_interval :: Object -> Integer
-get_interval conf = case HM.lookup "interval" conf of
-   Nothing -> 60
-   Just (String x) -> (read (unpack x) :: Integer)
-
-
-get_ttl :: Object -> Float
-get_ttl conf = case HM.lookup "ttl" conf of
-   Nothing -> 125.0
-   Just (String x) -> (read (unpack x) :: Float)
-
-from_json :: Object -> HimpyConfig
-from_json conf =
-   (Hosts (get_interval conf) (get_ttl conf)
-    (get_host conf) (get_port conf) (get_log conf)
-    (get_hosts conf) (get_thresholds conf))
-
+instance FromJSON HimpyConfig where
+  parseJSON (Object o) = Hosts <$> o .: "interval"
+                               <*> o .: "ttl"
+                               <*> o .: "host"
+                               <*> o .: "port"
+                               <*> o .: "logfile"
+                               <*> o .: "hosts"
+                               <*> o .: "thresholds"
 
 configure path = do
    content <- BL.readFile path
-   let Just json_config = decode content :: Maybe Object
-   let conf = from_json json_config
+   let parsed = eitherDecode content :: Either String HimpyConfig
+   putStrLn $ "got config: " ++ show parsed
+   let (Right conf) = parsed
    return conf
