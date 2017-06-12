@@ -1,0 +1,25 @@
+#!/usr/bin/make -f
+
+DISTRIBUTION := $(shell lsb_release -sc)
+VERSION := $(shell awk '($$1 == "version:") {print $$2}' himpy.cabal)
+DEBVERSION := $(VERSION)~$(shell date +%Y%m%dT%H%M%SZ)-0~$(DISTRIBUTION)0
+
+%:
+	dh $@ --with systemd
+
+override_dh_gencontrol:
+	dh_gencontrol -- -v$(DEBVERSION)
+
+# Don't try to do anything automatically
+override_dh_auto_configure:
+override_dh_auto_test:
+override_dh_auto_install:
+
+export HOME=$(PWD)
+
+override_dh_auto_build: $(info I: DEBVERSION=$(DEBVERSION))
+	cabal sandbox init
+	cabal update
+	LDFLAGS= cabal install --dependencies-only
+	cabal configure
+	LDFLAGS= cabal build
