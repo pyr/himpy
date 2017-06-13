@@ -2,7 +2,7 @@
 --  see http://haskell.org/cabal/users-guide/
 
 name:                himpy
-version:             0.5.0
+version:             0.5.1
 synopsis:            multithreaded snmp poller for riemann
 description:         
      Himpy provides a multi-threaded snmp poller which reports

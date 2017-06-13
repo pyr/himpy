@@ -40,7 +40,7 @@ get_host conf = case HM.lookup "host" conf of
 
 get_log :: Object -> String
 get_log conf = case HM.lookup "logfile" conf of
-   Nothing -> "/var/log/himpy.log"
+   Nothing -> "/var/log/himpy/himpy.log"
    Just (String x) -> unpack x
 
 get_port :: Object -> Integer

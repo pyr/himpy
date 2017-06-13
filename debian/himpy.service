@@ -1,0 +1,15 @@
+[Unit]
+Description=multithreaded SNMP poller
+After=network.target
+ConditionPathExists=/etc/himpy.conf
+
+[Service]
+Type=simple
+User=_himpy
+Group=_himpy
+ExecStart=/usr/bin/himpy
+Restart=on-failure
+LimitNOFILE=8192
+
+[Install]
+WantedBy=multi-user.target
